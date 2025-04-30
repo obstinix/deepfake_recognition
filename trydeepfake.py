@@ -1,4 +1,4 @@
-'''DEEPFAKE DETECTION'''
+
 
 import numpy as np
 import cv2
