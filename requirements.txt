@@ -1,0 +1,35 @@
+# Deepfake Detection Application - Requirements
+
+## Core Dependencies
+torch==2.1.0
+torchvision==0.16.0
+opencv-python==4.8.1.78
+opencv-contrib-python==4.8.1.78
+face-recognition==1.3.5
+scikit-image==0.22.0
+numpy==1.24.3
+scipy==1.11.4
+
+## Web Framework
+Flask==3.0.0
+Werkzeug==3.0.1
+
+## Optional: Production Server
+gunicorn==21.2.0
+python-dotenv==1.0.0
+
+## Optional: Development & Testing
+pytest==7.4.3
+pytest-cov==4.1.0
+black==23.12.0
+flake8==6.1.0
+mypy==1.7.1
+pylint==3.0.3
+
+## Optional: Monitoring & Logging
+python-json-logger==2.0.7
+
+## System Requirements
+# Python >= 3.8
+# CUDA Toolkit 11.8+ (for GPU support, optional)
+# cuDNN 8.7+ (for GPU support, optional)
