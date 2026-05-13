@@ -35,8 +35,8 @@ https://<GITHUB_PAT>@github.com/obstinix/deepfake_recognition.git
 Run this once at the start of the session:
 ```bash
 git remote set-url origin https://<GITHUB_PAT>@github.com/obstinix/deepfake_recognition.git
-git config user.email "deepfake-bot@project.ai"
-git config user.name "DeepfakeBot"
+git config user.email "obstinix@gmail.com"
+git config user.name "obstinix-"
 ```
 
 ---
