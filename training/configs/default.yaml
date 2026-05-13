@@ -1,0 +1,30 @@
+training:
+  epochs: 100
+  batch_size: 32
+  learning_rate: 0.001
+  weight_decay: 1.0e-4
+  patience: 10
+  grad_clip: 1.0
+
+augmentation:
+  horizontal_flip: 0.5
+  rotation: 10
+  gaussian_blur: 0.2
+  compression_quality: 50
+
+model:
+  ensemble: true
+  models:
+    - resnet18
+    - efficientnet_b3
+    - vit_base
+
+optimizer: adamw
+scheduler: cosine_annealing_warmrestarts
+
+data:
+  train_split: 0.70
+  val_split: 0.15
+  test_split: 0.15
+  num_workers: 4
+  input_size: 224
