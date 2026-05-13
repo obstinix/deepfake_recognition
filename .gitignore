@@ -1,1 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+venv/
+env/
+.env
+!.env.example
 
+# Node
+node_modules/
+dist/
+.DS_Store
+
+# ML
+*.pth
+*.pt
+*.onnx
+*.pkl
+models/checkpoints/
+
+# Docker
+*.log
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Coverage
+htmlcov/
+.coverage
+coverage.xml
+
+# Uploads
+backend/uploads/
