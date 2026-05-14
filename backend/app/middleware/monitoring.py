@@ -10,8 +10,12 @@ async def add_monitoring(request: Request, call_next):
     start = time.time()
     response = await call_next(request)
     duration = time.time() - start
-    REQUEST_COUNT.labels(request.method, request.url.path, response.status_code).inc()
-    REQUEST_LATENCY.labels(request.method, request.url.path).observe(duration)
+    import re
+    path = request.url.path
+    path = re.sub(r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}", ":id", path)
+    
+    REQUEST_COUNT.labels(request.method, path, response.status_code).inc()
+    REQUEST_LATENCY.labels(request.method, path).observe(duration)
     return response
 
 

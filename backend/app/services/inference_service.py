@@ -51,3 +51,13 @@ def run_inference(task_id: str, file_path: str, file_type: str) -> None:
     except Exception as e:
         logger.error(f"Task {task_id} failed: {e}", exc_info=True)
         update_task_status(task_id, "failed", error_message=str(e))
+    finally:
+        try:
+            import shutil
+            import os
+            task_dir = os.path.dirname(file_path)
+            if os.path.exists(task_dir):
+                shutil.rmtree(task_dir)
+                logger.info(f"Cleaned up directory {task_dir}")
+        except Exception as e:
+            logger.error(f"Cleanup failed for {task_id}: {e}")
