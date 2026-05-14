@@ -22,10 +22,11 @@ async def save_upload(file: UploadFile, task_id: str) -> str:
     if len(content) > MAX_BYTES:
         raise HTTPException(400, f"File too large (max {settings.MAX_UPLOAD_SIZE_MB}MB)")
 
-    ext = os.path.splitext(file.filename or "file")[1] or ".bin"
+    safe_filename = os.path.basename(file.filename or "file")
+    ext = os.path.splitext(safe_filename)[1].lower() or ".bin"
     dest_dir = os.path.join(settings.UPLOAD_DIR, task_id)
     os.makedirs(dest_dir, exist_ok=True)
-    dest_path = os.path.join(dest_dir, f"input{ext}")
+    dest_path = os.path.join(dest_dir, f"{task_id}{ext}")
 
     async with aiofiles.open(dest_path, "wb") as f:
         await f.write(content)
