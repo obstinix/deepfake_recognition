@@ -56,28 +56,34 @@ docker-compose up -d
 - [Frontend README](./frontend/README.md)
 - [Training README](./training/README.md)
 
-## Dataset Setup
+## Dataset
 
-The model supports three deepfake datasets. You need to obtain one before training.
-
-### Option A — FaceForensics++ (recommended, best benchmark)
-1. Request access: https://github.com/ondyari/FaceForensics (fill the Google form)
-2. Download c23 compression: `python faceforensics_download.py . -d all -c c23 -t videos`
-3. Extract frames: `python scripts/download_faceforensics.py extract-frames --source data/FaceForensics --output data/frames --fps 1`
-
-### Option B — Celeb-DF-v2 (easier access)
-1. Request: https://github.com/yuezunli/celeb-deepfakeforensics
-2. Extract: `python scripts/download_faceforensics.py extract-celebdf --source data/Celeb-DF-v2 --output data/frames --fps 1`
-
-### Option C — DFDC subset (Kaggle, no request needed)
-1. Download from Kaggle: https://www.kaggle.com/c/deepfake-detection-challenge
-2. Extract: `python scripts/download_faceforensics.py extract-dfdc --source data/DFDC --output data/frames --fps 1`
-
-### Verify your dataset
+**Automated download (recommended):**
 ```bash
-python scripts/download_faceforensics.py verify --path data/frames
+# Downloads best available dataset automatically
+# Requires free Kaggle account: https://www.kaggle.com/settings → API → Create Token
+export KAGGLE_USERNAME=your_username
+export KAGGLE_KEY=your_api_key
+python scripts/download_dataset.py auto --output data/frames
 ```
-Expected output: real and fake counts, balance percentage.
+
+**No Kaggle account? Use synthetic data for testing:**
+```bash
+python scripts/download_dataset.py synthetic --output data/frames --n-images 400
+```
+
+**Manual dataset options:**
+| Dataset | Size | Requires | Command |
+|---------|------|----------|---------|
+| 140k Real/Fake Faces | ~2GB | Free Kaggle account | `kaggle-140k` |
+| Real and Fake Detection | ~500MB | Free Kaggle account | `kaggle-real-fake` |
+| DFDC Sample | ~10GB | Join free competition | `dfdc` |
+| FaceForensics++ | ~100GB | Email approval | see scripts/download_faceforensics.py |
+
+**Verify your dataset:**
+```bash
+python scripts/download_dataset.py verify --path data/frames
+```
 
 ### Train
 ```bash
