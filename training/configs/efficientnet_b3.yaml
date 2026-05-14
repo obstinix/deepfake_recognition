@@ -1,0 +1,32 @@
+model:
+  name: efficientnet_b3
+  pretrained: true
+  num_classes: 2
+  dropout: 0.35
+  freeze_backbone_epochs: 3
+
+data:
+  img_size: 300
+  batch_size: 32
+  num_workers: 4
+  val_ratio: 0.15
+  test_ratio: 0.10
+  seed: 42
+
+training:
+  epochs: 50
+  optimizer: adamw
+  lr: 1.5e-4
+  weight_decay: 1.0e-4
+  scheduler: cosine_with_warmup
+  warmup_epochs: 3
+  early_stopping_patience: 8
+  gradient_clip: 1.0
+  mixed_precision: true
+  label_smoothing: 0.05
+
+logging:
+  use_wandb: true
+  wandb_project: deepfake-recognition
+  save_top_k: 3
+  checkpoint_dir: checkpoints/

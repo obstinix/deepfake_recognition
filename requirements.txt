@@ -1,0 +1,15 @@
+torch==2.1.2
+torchvision==0.16.2
+timm==0.9.12
+Pillow==10.2.0
+opencv-python-headless==4.9.0.80
+numpy==1.26.4
+scikit-learn==1.4.0
+pydantic==2.5.3
+pydantic-settings==2.1.0
+PyYAML==6.0.1
+tqdm==4.66.1
+wandb==0.16.2
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+python-multipart==0.0.7

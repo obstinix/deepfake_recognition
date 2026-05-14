@@ -22,8 +22,8 @@ build/
 *.mp4
 *.avi
 *.mov
-data/
-datasets/
+/data/
+/datasets/
 
 # Experiment tracking
 wandb/
