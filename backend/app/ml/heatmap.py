@@ -35,7 +35,7 @@ def generate_gradcam(model, image_path: str, device: torch.device) -> Optional[s
         activations, gradients = [], []
         hooks = [
             target_layer.register_forward_hook(lambda m, i, o: activations.append(o)),
-            target_layer.register_backward_hook(lambda m, gi, go: gradients.append(go[0]))
+            target_layer.register_full_backward_hook(lambda m, gi, go: gradients.append(go[0]))
         ]
 
         output = model(img_tensor)
