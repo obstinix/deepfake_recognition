@@ -11,7 +11,7 @@ A production-grade deepfake detection system using an ensemble of fine-tuned dee
 ## Architecture
 
 ```
-User → React Frontend → FastAPI → Celery Workers → ML Ensemble → Results
+User → React Frontend → FastAPI (BackgroundTasks) → ML Ensemble → Results
 ```
 
 ## Quick Start
