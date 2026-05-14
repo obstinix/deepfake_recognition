@@ -3,60 +3,43 @@
 ![Python](https://img.shields.io/badge/Python-3.10+-blue)
 ![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-red)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.104-green)
-![React](https://img.shields.io/badge/React-18-blue)
+![Docker](https://img.shields.io/badge/Docker-Enabled-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
-A production-grade deepfake detection system using an ensemble of fine-tuned deep learning models (ResNet-18, EfficientNet-B3, ViT-Base), a FastAPI backend, and a modern React frontend.
+A production-grade deepfake detection system using fine-tuned deep learning models (ResNet-18, EfficientNet-B3), complete with a training pipeline, dataset downloaders, and a FastAPI inference server.
 
-## Architecture
-
-```
-User → React Frontend → FastAPI (BackgroundTasks) → ML Ensemble → Results
-```
-
-## Quick Start
+## 🚀 Quick Start
 
 ```bash
-# Clone and setup
+# 1. Clone repository
 git clone https://github.com/obstinix/deepfake_recognition.git
 cd deepfake_recognition
+
+# 2. Setup environment
+pip install -r requirements.txt
 cp .env.example .env
 
-# Run with Docker
-docker-compose up -d
+# 3. Download synthetic dataset for smoke-testing
+python scripts/download_dataset.py synthetic --output data/frames --n-images 400
 
-# Access
-# Frontend: http://localhost:3000
-# API:      http://localhost:8000
-# API Docs: http://localhost:8000/docs
+# 4. Train a fast model
+python training/train.py --config training/configs/resnet18.yaml --data data/frames --max-samples 100
+
+# 5. Start API server
+uvicorn api.main:app --reload
 ```
 
-## Project Structure
+## 📊 Model Performance
 
-| Directory | Description |
-|-----------|-------------|
-| `backend/` | FastAPI application, models, services |
-| `frontend/` | React + TypeScript web interface |
-| `training/` | Model training scripts and utilities |
-| `models/` | Trained model checkpoints |
-| `k8s/` | Kubernetes deployment manifests |
-
-## Model Performance
+*Model performance will be updated once fully trained on a large dataset like FaceForensics++ or DFDC.*
 
 | Model | Accuracy | Latency |
 |-------|----------|---------|
-| ResNet-18 (fine-tuned) | 92% | 50ms |
-| EfficientNet-B3 (fine-tuned) | 94% | 100ms |
-| ViT-Base (fine-tuned) | 91% | 150ms |
-| **Ensemble** | **95%+** | **120ms** |
+| ResNet-18 (fine-tuned) | TBD | ~50ms |
+| EfficientNet-B3 (fine-tuned) | TBD | ~100ms |
+| **Ensemble** | **TBD** | **~120ms** |
 
-## Documentation
-
-- [Backend README](./backend/README.md)
-- [Frontend README](./frontend/README.md)
-- [Training README](./training/README.md)
-
-## Dataset
+## 💾 Dataset
 
 **Automated download (recommended):**
 ```bash
@@ -85,11 +68,86 @@ python scripts/download_dataset.py synthetic --output data/frames --n-images 400
 python scripts/download_dataset.py verify --path data/frames
 ```
 
-### Train
-```bash
-# Quick test (100 samples, no GPU needed)
-python training/train.py --config training/configs/resnet18.yaml --data data/frames --max-samples 100
+## 🏋️ Training
 
-# Full training
+The project includes configs for multiple architectures.
+
+```bash
+# ResNet-18
 python training/train.py --config training/configs/resnet18.yaml --data data/frames
+
+# EfficientNet-B3
+python training/train.py --config training/configs/efficientnet_b3.yaml --data data/frames
+
+# Evaluate
+python training/evaluate.py --checkpoint checkpoints/resnet18/best.pth --config training/configs/resnet18.yaml --data data/frames
+```
+
+## 🌐 Inference API
+
+The FastAPI server provides endpoints for image and video prediction.
+
+```bash
+# Start server
+uvicorn api.main:app --host 0.0.0.0 --port 8000
+
+# Predict Image
+curl -X POST "http://localhost:8000/predict/image" \
+  -H "accept: application/json" \
+  -H "Content-Type: multipart/form-data" \
+  -F "file=@test_image.jpg"
+
+# Predict Video
+curl -X POST "http://localhost:8000/predict/video?sample_frames=16" \
+  -H "accept: application/json" \
+  -H "Content-Type: multipart/form-data" \
+  -F "file=@test_video.mp4"
+```
+
+## 🐳 Docker
+
+Run the entire inference stack using Docker.
+
+```bash
+# Build and run
+docker-compose up -d --build
+
+# View logs
+docker-compose logs -f api
+```
+
+## 🧪 Tests
+
+```bash
+# Install test dependencies
+pip install -r requirements-dev.txt
+
+# Run pytest
+pytest tests/ -v
+```
+
+## 📁 Project Structure
+
+```text
+deepfake_recognition/
+├── api/                   # FastAPI inference server
+│   └── main.py
+├── scripts/               # Utilities (dataset downloaders)
+│   ├── download_dataset.py
+│   └── download_faceforensics.py
+├── src/
+│   └── deepfake_recognition/
+│       ├── data/          # PyTorch datasets and transforms
+│       ├── inference/     # Predictor wrapper classes
+│       ├── models/        # ResNet, EfficientNet definitions
+│       └── training/      # Trainer loops, metrics, callbacks
+├── tests/                 # Pytest suite
+├── training/              # CLI entry points
+│   ├── configs/           # YAML hyperparameters
+│   ├── evaluate.py
+│   └── train.py
+├── .github/workflows/     # CI pipelines
+├── Dockerfile
+├── docker-compose.yml
+└── requirements.txt       # Pinned dependencies
 ```
