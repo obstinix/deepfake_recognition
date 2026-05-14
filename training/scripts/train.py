@@ -4,6 +4,8 @@ import yaml
 import torch
 import torch.nn as nn
 import torch.optim as optim
+import random
+import numpy as np
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 from datetime import datetime
@@ -15,7 +17,7 @@ from training.utils.early_stopping import EarlyStopping
 from training.utils.metrics import compute_metrics, print_metrics
 from backend.app.ml.models import build_resnet18, build_efficientnet_b3, build_vit
 
-def train_epoch(model, loader, criterion, optimizer, device):
+def train_epoch(model, loader, criterion, optimizer, device, grad_clip=None):
     model.train()
     running_loss = 0.0
     all_preds, all_labels = [], []
@@ -26,6 +28,10 @@ def train_epoch(model, loader, criterion, optimizer, device):
         outputs = model(images)
         loss = criterion(outputs, labels)
         loss.backward()
+        
+        if grad_clip is not None:
+            torch.nn.utils.clip_grad_norm_(model.parameters(), grad_clip)
+            
         optimizer.step()
         
         running_loss += loss.item() * images.size(0)
@@ -64,6 +70,13 @@ def main(config_path, data_dir):
     with open(config_path, 'r') as f:
         config = yaml.safe_load(f)
         
+    seed = config.get('training', {}).get('seed', 42)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    np.random.seed(seed)
+    random.seed(seed)
+    torch.backends.cudnn.deterministic = True
+        
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
     
@@ -90,12 +103,21 @@ def main(config_path, data_dir):
             
         criterion = nn.CrossEntropyLoss()
         optimizer = optim.AdamW(model.parameters(), lr=config['training']['learning_rate'], weight_decay=config['training']['weight_decay'])
+        
+        scheduler = None
+        if config.get('training', {}).get('scheduler') == 'cosine_annealing_warmrestarts':
+            scheduler = optim.lr_scheduler.CosineAnnealingWarmRestarts(optimizer, T_0=10, T_mult=2)
+            
         early_stopping = EarlyStopping(patience=config['training']['patience'], mode="min")
+        grad_clip = config.get('training', {}).get('grad_clip')
         
         for epoch in range(config['training']['epochs']):
             print(f"\nEpoch {epoch+1}/{config['training']['epochs']}")
-            train_loss, train_metrics = train_epoch(model, train_loader, criterion, optimizer, device)
+            train_loss, train_metrics = train_epoch(model, train_loader, criterion, optimizer, device, grad_clip)
             val_loss, val_metrics = validate_epoch(model, val_loader, criterion, device)
+            
+            if scheduler is not None:
+                scheduler.step()
             
             print(f"Train Loss: {train_loss:.4f} | Val Loss: {val_loss:.4f}")
             print_metrics(val_metrics, prefix="Validation Metrics")
