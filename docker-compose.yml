@@ -31,21 +31,6 @@ services:
     networks:
       - deepfake-net
 
-  worker:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    command: celery -A app.celery_app worker --loglevel=info --concurrency=2
-    env_file: .env
-    volumes:
-      - ./models:/app/models
-      - ./backend/uploads:/app/uploads
-    depends_on:
-      - db
-      - redis
-    networks:
-      - deepfake-net
-
   db:
     image: postgres:15-alpine
     environment:
