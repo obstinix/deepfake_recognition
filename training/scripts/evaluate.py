@@ -30,7 +30,7 @@ def main(config_path, data_dir, model_name, checkpoint_path):
     else:
         raise ValueError(f"Unknown model: {model_name}")
         
-    checkpoint = torch.load(checkpoint_path, map_location=device)
+    checkpoint = torch.load(checkpoint_path, map_location=device, weights_only=True)
     model.load_state_dict(checkpoint['model_state_dict'])
     model.eval()
     
