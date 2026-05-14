@@ -11,8 +11,7 @@ sqlalchemy==2.0.23
 psycopg2-binary==2.9.9
 alembic==1.12.1
 
-# Queue
-celery==5.3.4
+# Queue / Cache
 redis==5.0.1
 
 # ML
