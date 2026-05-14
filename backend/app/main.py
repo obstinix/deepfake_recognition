@@ -8,11 +8,20 @@ from app.utils.logger import get_logger
 
 logger = get_logger(__name__)
 
+from contextlib import asynccontextmanager
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    create_tables()
+    logger.info(f"Deepfake Recognition API started — env={settings.APP_ENV}")
+    yield
+
 app = FastAPI(
     title=settings.API_TITLE,
     version=settings.API_VERSION,
     docs_url="/docs",
     redoc_url="/redoc",
+    lifespan=lifespan,
 )
 
 app.add_middleware(
@@ -25,12 +34,6 @@ app.add_middleware(
 app.middleware("http")(add_monitoring)
 app.mount("/metrics", metrics_app)
 app.include_router(router, prefix=settings.API_PREFIX)
-
-
-@app.on_event("startup")
-async def startup():
-    create_tables()
-    logger.info(f"Deepfake Recognition API started — env={settings.APP_ENV}")
 
 
 @app.get("/")
