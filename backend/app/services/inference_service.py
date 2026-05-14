@@ -36,13 +36,15 @@ def run_inference(task_id: str, file_path: str, file_type: str) -> None:
         update_task_status(
             task_id,
             "completed",
-            verdict=result["verdict"],
-            confidence=result["confidence"],
-            confidence_real=result["confidence_real"],
-            confidence_fake=result["confidence_fake"],
-            heatmap_data=heatmap,
-            models_used=result["models_used"],
-            processing_time_ms=elapsed_ms,
+            result={
+                "verdict": result["verdict"],
+                "confidence": result["confidence"],
+                "confidence_real": result["confidence_real"],
+                "confidence_fake": result["confidence_fake"],
+                "heatmap_data": heatmap,
+                "models_used": result["models_used"],
+                "processing_time_ms": elapsed_ms,
+            }
         )
         logger.info(f"Task {task_id} completed in {elapsed_ms}ms → {result['verdict']}")
 
