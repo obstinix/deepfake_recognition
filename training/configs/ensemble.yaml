@@ -1,11 +1,8 @@
 ensemble:
   models:
-    - checkpoint: checkpoints/resnet18_best.pth
-      weight: 0.35
-    - checkpoint: checkpoints/efficientnet_b3_best.pth
-      weight: 0.45
-    - checkpoint: checkpoints/vit_base_best.pth
-      weight: 0.20
+    - checkpoint: checkpoints/resnet18/best.pth
+      weight: 0.40
+    - checkpoint: checkpoints/efficientnet_b3/best.pth
+      weight: 0.60
   aggregation: weighted_average
   tta_enabled: true
-  tta_n_augments: 5

@@ -1,11 +1,11 @@
 {
   "schema_version": "1.0",
   "repo": "obstinix/deepfake_recognition",
-  "current_phase": 2,
+  "current_phase": 3,
   "phase_status": {
     "0": "done",
     "1": "done",
-    "2": "pending",
+    "2": "done",
     "3": "pending",
     "4": "pending",
     "5": "pending",

@@ -6,6 +6,7 @@ model:
   freeze_backbone_epochs: 3
 
 data:
+  root_dir: data/frames
   img_size: 300
   batch_size: 32
   num_workers: 4
@@ -18,15 +19,16 @@ training:
   optimizer: adamw
   lr: 1.5e-4
   weight_decay: 1.0e-4
-  scheduler: cosine_with_warmup
+  scheduler: cosine
   warmup_epochs: 3
   early_stopping_patience: 8
   gradient_clip: 1.0
   mixed_precision: true
   label_smoothing: 0.05
+  use_class_weights: true
 
 logging:
-  use_wandb: true
-  wandb_project: deepfake-recognition
+  use_wandb: false
+  project: deepfake-recognition
   save_top_k: 3
-  checkpoint_dir: checkpoints/
+  checkpoint_dir: checkpoints/efficientnet_b3/
