@@ -31,38 +31,7 @@ spec:
             memory: "4Gi"
             cpu: "2000m"
 ---
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: deepfake-worker
-  labels:
-    app: deepfake-worker
-spec:
-  replicas: 2
-  selector:
-    matchLabels:
-      app: deepfake-worker
-  template:
-    metadata:
-      labels:
-        app: deepfake-worker
-    spec:
-      containers:
-      - name: worker
-        image: obstinix/deepfake-backend:latest
-        command: ["celery", "-A", "app.services.task_service.celery_app", "worker", "--loglevel=info"]
-        envFrom:
-        - secretRef:
-            name: deepfake-secrets
-            optional: true
-        resources:
-          requests:
-            memory: "2Gi"
-            cpu: "1000m"
-          limits:
-            memory: "8Gi"
-            cpu: "4000m"
----
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
