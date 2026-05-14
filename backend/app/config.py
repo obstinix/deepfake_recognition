@@ -38,3 +38,6 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+if settings.APP_ENV == "production" and settings.APP_SECRET_KEY == "dev-secret-key-change-in-production":
+    raise ValueError("APP_SECRET_KEY must be changed in production")
