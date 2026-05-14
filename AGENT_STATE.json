@@ -1,28 +1,21 @@
 {
   "schema_version": "1.0",
   "repo": "obstinix/deepfake_recognition",
-  "current_phase": 3,
+  "current_phase": 4,
   "phase_status": {
     "0": "done",
     "1": "done",
     "2": "done",
-    "3": "pending",
+    "3": "done",
     "4": "pending",
     "5": "pending",
     "6": "pending",
     "7": "pending"
   },
-  "last_completed_task": "Phase 1 — Repo restructure complete",
+  "last_completed_task": "Phase 3 — Models + Training Loop",
   "last_push_sha": null,
   "notes": [
-    "Created src/deepfake_recognition/ package with models/, data/, training/, inference/, utils/",
-    "Created api/ package with routes/ for FastAPI (stub)",
-    "Created training/ with CLI entry points and YAML configs for resnet18, efficientnet_b3, ensemble",
-    "Created tests/ stubs, notebooks/README.md, scripts/ utilities",
-    "Added pyproject.toml with pinned deps, ruff/pytest/mypy config",
-    "Added requirements.txt (pinned) and requirements-dev.txt",
-    "config.py and logger.py fully implemented (not stubs)",
-    "Fixed .gitignore: /data/ only matches root, not src/deepfake_recognition/data/"
+    "Phases 4-7 cover API, tests, Docker, README — lower priority than ML"
   ],
   "blockers": [],
   "ml_metrics": {
