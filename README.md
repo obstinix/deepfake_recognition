@@ -55,3 +55,35 @@ docker-compose up -d
 - [Backend README](./backend/README.md)
 - [Frontend README](./frontend/README.md)
 - [Training README](./training/README.md)
+
+## Dataset Setup
+
+The model supports three deepfake datasets. You need to obtain one before training.
+
+### Option A — FaceForensics++ (recommended, best benchmark)
+1. Request access: https://github.com/ondyari/FaceForensics (fill the Google form)
+2. Download c23 compression: `python faceforensics_download.py . -d all -c c23 -t videos`
+3. Extract frames: `python scripts/download_faceforensics.py extract-frames --source data/FaceForensics --output data/frames --fps 1`
+
+### Option B — Celeb-DF-v2 (easier access)
+1. Request: https://github.com/yuezunli/celeb-deepfakeforensics
+2. Extract: `python scripts/download_faceforensics.py extract-celebdf --source data/Celeb-DF-v2 --output data/frames --fps 1`
+
+### Option C — DFDC subset (Kaggle, no request needed)
+1. Download from Kaggle: https://www.kaggle.com/c/deepfake-detection-challenge
+2. Extract: `python scripts/download_faceforensics.py extract-dfdc --source data/DFDC --output data/frames --fps 1`
+
+### Verify your dataset
+```bash
+python scripts/download_faceforensics.py verify --path data/frames
+```
+Expected output: real and fake counts, balance percentage.
+
+### Train
+```bash
+# Quick test (100 samples, no GPU needed)
+python training/train.py --config training/configs/resnet18.yaml --data data/frames --max-samples 100
+
+# Full training
+python training/train.py --config training/configs/resnet18.yaml --data data/frames
+```
