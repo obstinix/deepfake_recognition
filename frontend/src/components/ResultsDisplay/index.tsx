@@ -36,15 +36,11 @@ export default function ResultsDisplay({ data }: ResultsDisplayProps) {
     );
   }
 
-  const verdict = (data as Record<string, unknown>).verdict as 'real' | 'fake' | undefined;
-  const confidence = (data as Record<string, unknown>).confidence as number | undefined;
-  const confidenceReal = (data as Record<string, unknown>).confidence_real as number | undefined;
-  const confidenceFake = (data as Record<string, unknown>).confidence_fake as number | undefined;
-  const heatmapData = (data as Record<string, unknown>).heatmap_data as string | undefined;
-  const modelsUsed = (data as Record<string, unknown>).models_used as string[] | undefined;
-  const processingTime = (data as Record<string, unknown>).processing_time_ms as number | undefined;
+  const result = data.result;
+  
+  if (!result || result.confidence === undefined) return null;
 
-  if (!verdict || confidence === undefined) return null;
+  const { verdict, confidence, confidence_real, confidence_fake, heatmap_data, models_used, processing_time_ms } = result;
 
   return (
     <div className="space-y-8">
@@ -57,7 +53,7 @@ export default function ResultsDisplay({ data }: ResultsDisplayProps) {
             <div>
               <h3 className="text-2xl font-bold text-white">Analysis Complete</h3>
               <p className="text-dark-100 mt-1">
-                {data.filename} • {processingTime}ms
+                {data.filename} • {processing_time_ms}ms
               </p>
             </div>
 
@@ -66,27 +62,27 @@ export default function ResultsDisplay({ data }: ResultsDisplayProps) {
               <div>
                 <div className="flex justify-between text-sm mb-1">
                   <span className="text-green-400 font-medium">Real</span>
-                  <span className="text-dark-100">{((confidenceReal ?? 0) * 100).toFixed(1)}%</span>
+                  <span className="text-dark-100">{((confidence_real ?? 0) * 100).toFixed(1)}%</span>
                 </div>
                 <div className="h-2 bg-dark-500 rounded-full overflow-hidden">
-                  <div className="h-full bg-gradient-to-r from-green-600 to-green-400 rounded-full transition-all duration-1000" style={{ width: `${(confidenceReal ?? 0) * 100}%` }} />
+                  <div className="h-full bg-gradient-to-r from-green-600 to-green-400 rounded-full transition-all duration-1000" style={{ width: `${(confidence_real ?? 0) * 100}%` }} />
                 </div>
               </div>
               <div>
                 <div className="flex justify-between text-sm mb-1">
                   <span className="text-red-400 font-medium">Fake</span>
-                  <span className="text-dark-100">{((confidenceFake ?? 0) * 100).toFixed(1)}%</span>
+                  <span className="text-dark-100">{((confidence_fake ?? 0) * 100).toFixed(1)}%</span>
                 </div>
                 <div className="h-2 bg-dark-500 rounded-full overflow-hidden">
-                  <div className="h-full bg-gradient-to-r from-red-600 to-red-400 rounded-full transition-all duration-1000" style={{ width: `${(confidenceFake ?? 0) * 100}%` }} />
+                  <div className="h-full bg-gradient-to-r from-red-600 to-red-400 rounded-full transition-all duration-1000" style={{ width: `${(confidence_fake ?? 0) * 100}%` }} />
                 </div>
               </div>
             </div>
 
             {/* Models used */}
-            {modelsUsed && (
+            {models_used && (
               <div className="flex flex-wrap gap-2">
-                {modelsUsed.map((model) => (
+                {models_used.map((model) => (
                   <span key={model} className="px-3 py-1 rounded-full bg-primary-500/10 text-primary-300 text-xs font-medium border border-primary-500/20">
                     {model}
                   </span>
@@ -98,10 +94,10 @@ export default function ResultsDisplay({ data }: ResultsDisplayProps) {
       </div>
 
       {/* Heatmap */}
-      {heatmapData && (
+      {heatmap_data && (
         <div>
           <h3 className="text-lg font-semibold text-white mb-4">Attention Heatmap</h3>
-          <HeatmapViewer heatmapData={heatmapData} />
+          <HeatmapViewer heatmapData={heatmap_data} />
         </div>
       )}
     </div>
