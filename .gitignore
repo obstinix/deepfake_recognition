@@ -1,45 +1,59 @@
 # Python
 __pycache__/
 *.py[cod]
-*.so
-*.egg
 *.egg-info/
 dist/
 build/
-.eggs/
-venv/
-env/
+*.egg
+
+# ML model weights
+*.pth
+*.pt
+*.ckpt
+*.safetensors
+
+# Environment
 .env
+.env.*
 !.env.example
+
+# Data & media
+*.zip
+*.mp4
+*.avi
+*.mov
+data/
+datasets/
+
+# Experiment tracking
+wandb/
+mlruns/
+runs/
+logs/
+checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db
 
 # Node
 node_modules/
-dist/
-.DS_Store
+*.js.map
+runtime-*.js
+*.bundle.js
 
-# ML
-*.pth
-*.pt
-*.onnx
-*.pkl
-models/checkpoints/
-
-# Docker
-*.log
-
-# IDE
-.idea/
-.vscode/
-*.swp
-*.swo
-
-# Coverage
+# Test / coverage
+.pytest_cache/
 htmlcov/
 .coverage
 coverage.xml
 
-# Uploads
-backend/uploads/
+# IDE
+.vscode/
+.idea/
 
-# Agent
+# Agent state is tracked on purpose (do not ignore)
+# AGENT_STATE.json
+
+# Local agent working dirs
 .agent/
