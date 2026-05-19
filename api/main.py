@@ -90,7 +90,8 @@ async def predict_image(file: UploadFile = File(...), use_tta: bool = False):
     return {"label": r["label"], "confidence": round(r["confidence"], 4),
             "probabilities": {"real": round(r["prob_real"], 4),
                               "fake": round(r["prob_fake"], 4)},
-            "processing_ms": round((time.time() - t0) * 1000, 1)}
+            "processing_ms": round((time.time() - t0) * 1000, 1),
+            "gradcam_image": r.get("gradcam_image")}
 
 
 @app.post("/api/predict/video")

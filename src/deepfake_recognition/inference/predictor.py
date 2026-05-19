@@ -7,6 +7,7 @@ from PIL import Image
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 from deepfake_recognition.data.transforms import get_val_transforms, get_tta_transforms
+from deepfake_recognition.utils.gradcam import generate_gradcam_base64
 
 
 class Predictor:
@@ -38,16 +39,24 @@ class Predictor:
 
     @torch.no_grad()
     def predict_pil(self, img: Image.Image, use_tta: bool = False) -> dict:
+        input_tensor = self.val_tf(img).unsqueeze(0).to(self.device)
         if use_tta:
             logits = torch.stack([self.model(tf(img).unsqueeze(0).to(self.device))
                                    for tf in self.tta_tfs]).mean(0)
         else:
-            logits = self.model(self.val_tf(img).unsqueeze(0).to(self.device))
+            logits = self.model(input_tensor)
         probs = F.softmax(logits, dim=1)[0]
         prob_fake, prob_real = probs[1].item(), probs[0].item()
+        
+        # Generate Grad-CAM (using gradients necessitates requires_grad setup if model is frozen, but we will temporarily enable grad)
+        with torch.enable_grad():
+            input_tensor_grad = input_tensor.clone().requires_grad_(True)
+            gradcam_b64 = generate_gradcam_base64(self.model, input_tensor_grad, img)
+            
         return {"label": "fake" if prob_fake > 0.5 else "real",
                 "confidence": max(prob_real, prob_fake),
-                "prob_real": prob_real, "prob_fake": prob_fake}
+                "prob_real": prob_real, "prob_fake": prob_fake,
+                "gradcam_image": gradcam_b64}
 
     @torch.no_grad()
     def predict_video(self, video_path: str, n_frames: int = 16) -> dict:

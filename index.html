@@ -246,7 +246,7 @@
 </div>
 </div>
 <!-- Diagnostics Cluster -->
-<div class="grid grid-cols-2 gap-md mt-lg" id="diagnostics-cluster">
+<div class="grid grid-cols-2 gap-md mt-lg hidden" id="diagnostics-cluster">
 <div class="p-md recessed rounded-lg">
 <span class="font-label-caps text-label-caps text-on-surface-variant block mb-sm">Prediction Verdict</span>
 <div class="h-2 w-full bg-surface-container-highest rounded-full overflow-hidden">
@@ -258,6 +258,18 @@
 <span class="font-label-caps text-label-caps text-on-surface-variant block mb-sm">Analysis Speed</span>
 <span id="speed-text" class="font-data-sm text-data-sm text-primary mt-sm block">-- ms</span>
 </div>
+</div>
+<!-- Frame Timeline (Videos Only) -->
+<div id="frame-timeline-container" class="mt-md hidden">
+<span class="font-label-caps text-label-caps text-on-surface-variant block mb-sm">Frame Analysis Timeline</span>
+<div class="flex gap-1 overflow-x-auto pb-2" id="frame-timeline">
+<!-- frames injected here -->
+</div>
+</div>
+<!-- GradCAM Display -->
+<div id="gradcam-container" class="mt-md hidden flex flex-col items-center">
+<span class="font-label-caps text-label-caps text-on-surface-variant block mb-sm w-full">Grad-CAM Heatmap</span>
+<img id="gradcam-img" class="w-full max-w-[300px] rounded-lg elevated" src="" />
 </div>
 <div class="mt-lg pt-md border-t border-outline-variant/20 flex items-center justify-between">
 <div class="flex items-center gap-sm">
@@ -516,6 +528,11 @@
         const isVideo = file.type.startsWith('video');
         const endpoint = isVideo ? '/api/predict/video' : '/api/predict/image';
         
+        document.getElementById('diagnostics-cluster').classList.remove('hidden');
+        document.getElementById('gradcam-container').classList.add('hidden');
+        document.getElementById('frame-timeline-container').classList.add('hidden');
+        document.getElementById('frame-timeline').innerHTML = '';
+        
         const formData = new FormData();
         formData.append('file', file);
 
@@ -549,6 +566,21 @@
             verdictBar.style.width = `${conf}%`;
             confidenceText.textContent = `${conf}%`;
             speedText.textContent = `${data.processing_ms} ms`;
+            
+            if (data.gradcam_image) {
+                document.getElementById('gradcam-container').classList.remove('hidden');
+                document.getElementById('gradcam-img').src = data.gradcam_image;
+            }
+            if (data.frame_predictions) {
+                document.getElementById('frame-timeline-container').classList.remove('hidden');
+                const timeline = document.getElementById('frame-timeline');
+                data.frame_predictions.forEach(frame => {
+                    const el = document.createElement('div');
+                    el.className = `flex-shrink-0 w-8 h-8 rounded-sm tooltip ${frame.label.toLowerCase() === 'fake' ? 'bg-[red]' : 'bg-primary'}`;
+                    el.title = `Frame ${frame.frame_idx}: ${Math.round(frame.prob_fake*100)}% fake`;
+                    timeline.appendChild(el);
+                });
+            }
             
         } catch (error) {
             console.error(error);
