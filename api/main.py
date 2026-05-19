@@ -3,9 +3,13 @@ from __future__ import annotations
 import io, sys, time
 from contextlib import asynccontextmanager
 from pathlib import Path
+import os
+from pydantic import BaseModel
 
-from fastapi import FastAPI, File, HTTPException, Request, UploadFile
+from fastapi import FastAPI, File, HTTPException, Request, UploadFile, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
@@ -14,14 +18,24 @@ MAX_IMAGE_BYTES = 10 * 1024 * 1024
 MAX_VIDEO_BYTES = 100 * 1024 * 1024
 
 
-def _load_predictor():
+def _load_predictor(ckpt_path=None):
     try:
         from deepfake_recognition.inference.predictor import Predictor
+        if ckpt_path is None:
+            ckpt_path = os.getenv("MODEL_CHECKPOINT", "checkpoints/resnet18/best.pth")
+        
+        path = Path(ckpt_path)
+        if path.exists():
+            print(f"Loading checkpoint: {path}")
+            return Predictor.from_checkpoint(path)
+        
+        # Fallback list
         for ckpt in [Path("checkpoints/resnet18/best.pth"),
                      Path("checkpoints/efficientnet_b3/best.pth")]:
             if ckpt.exists():
-                print(f"Loading checkpoint: {ckpt}")
+                print(f"Loading fallback checkpoint: {ckpt}")
                 return Predictor.from_checkpoint(ckpt)
+                
         print("WARNING: No checkpoint found. Train a model first.")
         return None
     except Exception as e:
@@ -41,7 +55,19 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="Deepfake Recognition API", version="0.1.0", lifespan=lifespan)
 app.add_middleware(CORSMiddleware, allow_origins=["*"],
-                   allow_methods=["GET", "POST"], allow_headers=["*"])
+                   allow_methods=["*"], allow_headers=["*"])
+
+app.mount("/static", StaticFiles(directory="stitch_veritas_ai_detection_platform"), name="static")
+
+@app.get("/")
+def serve_frontend():
+    if not Path("index.html").exists():
+        return "index.html not found. Check deployment.", 404
+    return FileResponse("index.html")
+
+class ReloadRequest(BaseModel):
+    checkpoint_path: str
+
 
 
 @app.middleware("http")
@@ -56,6 +82,14 @@ async def track_metrics(request: Request, call_next):
     response.headers["X-Processing-Time-Ms"] = f"{ms:.1f}"
     return response
 
+
+@app.post("/api/model/reload")
+async def reload_model(req: ReloadRequest):
+    new_predictor = _load_predictor(req.checkpoint_path)
+    if new_predictor is None:
+        raise HTTPException(status_code=400, detail="Failed to load checkpoint")
+    app.state.predictor = new_predictor
+    return {"status": "reloaded", "model_version": req.checkpoint_path, "val_accuracy": 0.0}
 
 @app.get("/api/health")
 async def health():

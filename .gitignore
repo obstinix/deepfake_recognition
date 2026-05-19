@@ -7,7 +7,6 @@ build/
 *.egg
 
 # ML model weights
-*.pth
 *.pt
 *.ckpt
 *.safetensors
@@ -57,3 +56,11 @@ coverage.xml
 
 # Local agent working dirs
 .agent/
+
+# Security exclusions
+*.pem
+*.key
+kaggle.json
+~/.kaggle/access_token
+secrets.json
+config.local.*
