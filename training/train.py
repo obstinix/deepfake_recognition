@@ -63,12 +63,12 @@ def main():
     train_loader = DataLoader(
         train_ds, batch_size=cfg["data"]["batch_size"],
         shuffle=True, num_workers=cfg["data"]["num_workers"],
-        pin_memory=True, persistent_workers=True,
+        pin_memory=True, persistent_workers=cfg["data"]["num_workers"] > 0,
     )
     val_loader = DataLoader(
         val_ds, batch_size=cfg["data"]["batch_size"] * 2,
         shuffle=False, num_workers=cfg["data"]["num_workers"],
-        pin_memory=True, persistent_workers=True,
+        pin_memory=True, persistent_workers=cfg["data"]["num_workers"] > 0,
     )
 
     # Build model

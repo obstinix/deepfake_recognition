@@ -55,10 +55,18 @@ def _get_kaggle_creds() -> tuple[str, str] | None:
     if username and key:
         return username, key
 
+    token = os.environ.get("KAGGLE_API_TOKEN")
+    if token:
+        return "token", token
+
     kaggle_json = Path.home() / ".kaggle" / "kaggle.json"
     if kaggle_json.exists():
         with open(kaggle_json) as f:
             creds = json.load(f)
+        if "token" in creds:
+             return "token", creds["token"]
+        if creds.get("key", "").startswith("KGAT_"):
+             return "token", creds["key"]
         return creds.get("username"), creds.get("key")
 
     return None
@@ -91,7 +99,11 @@ def _kaggle_download(dataset: str, dest: Path, is_competition: bool = False) -> 
     print(f"Downloading from Kaggle: {dataset}")
     print(f"Destination: {zip_path}")
 
-    response = requests.get(url, auth=(username, key), stream=True, timeout=120)
+    if username == "token" or key.startswith("KGAT_"):
+        headers = {"Authorization": f"Bearer {key}"}
+        response = requests.get(url, headers=headers, stream=True, timeout=120)
+    else:
+        response = requests.get(url, auth=(username, key), stream=True, timeout=120)
 
     if response.status_code == 403:
         raise RuntimeError(

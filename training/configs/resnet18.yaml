@@ -9,13 +9,13 @@ data:
   root_dir: data/frames      # change this to your extracted frames path
   img_size: 224
   batch_size: 64
-  num_workers: 4
+  num_workers: 0
   val_ratio: 0.15
   test_ratio: 0.10
   seed: 42
 
 training:
-  epochs: 50
+  epochs: 1
   optimizer: adamw
   lr: 3.0e-4
   weight_decay: 1.0e-4
