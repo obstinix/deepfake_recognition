@@ -58,7 +58,7 @@ The project targets real-world use cases: journalists verifying media authentici
 | Mobile responsive UI | ✅ Implemented |
 | EfficientNet-B0 variant | 🔄 Planned |
 | Vision Transformer (ViT-B/16) variant | 🔄 Planned |
-| Real model training on Celeb-DF / FF++ | ⏳ In progress (RTX 5050) |
+| Real model training on Celeb-DF / FF++ | ⏳ In progress  |
 | Confusion matrix + ROC curve logging | 🔄 Planned |
 | CI/CD via GitHub Actions | 🔄 Planned |
 | Public deployment | 🔄 Post-training |
