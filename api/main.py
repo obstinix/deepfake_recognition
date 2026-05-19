@@ -57,21 +57,21 @@ async def track_metrics(request: Request, call_next):
     return response
 
 
-@app.get("/health")
+@app.get("/api/health")
 async def health():
     return {"status": "ok", "model_loaded": app.state.predictor is not None,
             "version": "0.1.0",
             "uptime_seconds": int(time.time() - app.state.start_time)}
 
 
-@app.get("/metrics")
+@app.get("/api/metrics")
 async def metrics():
     n = app.state.request_count
     return {"total_requests": n, "error_requests": app.state.error_count,
             "avg_latency_ms": round(app.state.total_latency_ms / max(n, 1), 1)}
 
 
-@app.post("/predict/image")
+@app.post("/api/predict/image")
 async def predict_image(file: UploadFile = File(...), use_tta: bool = False):
     if app.state.predictor is None:
         raise HTTPException(503, "No model loaded. Run training/train.py first.")
@@ -93,7 +93,7 @@ async def predict_image(file: UploadFile = File(...), use_tta: bool = False):
             "processing_ms": round((time.time() - t0) * 1000, 1)}
 
 
-@app.post("/predict/video")
+@app.post("/api/predict/video")
 async def predict_video(file: UploadFile = File(...), sample_frames: int = 16):
     if app.state.predictor is None:
         raise HTTPException(503, "No model loaded.")
